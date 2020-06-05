@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include <vector>
 #include <functional>
 #include <thread>
@@ -11,16 +12,25 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+struct RecvData
+{
+    int size;
+    const char* data;
+};
+
 class ServerSocket : public ISocket
 {
 private:
     sockaddr_in ip_addr;
-
 protected:
+    char* buffer;
     static const std::regex ip_pattern;
+    static const int buffer_size;
+
     int socket_fd;
-    std::vector<int> connct_fds;
     int connct_fd_num;
+
+    std::vector<int> connct_fds;
 public:
     ServerSocket(const char* addr="127.0.0.1", int port = 22)
     {
@@ -60,5 +70,5 @@ public:
      *  @return: char *
      * @return: int
      */
-    virtual int Recv(std::function<char*(const char*)>);
+    virtual RecvData Recv(int);
 };
